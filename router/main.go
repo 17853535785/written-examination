@@ -15,26 +15,37 @@ func main() {
 }
 
 func calNum(nums [][2]int) int {
-	var sortedNum []int
-	mark := make(map[int]int) // 用来标记区间的start点和end点
-	for _, item := range nums {
-		sortedNum = append(sortedNum, []int{item[0], item[1]}...) // 将目标数组转换为一维数组后面遍历使用
-		mark[item[0]] = 0                                         // 代表是区间start
-		mark[item[1]] = 1                                         // 代表是区间end
-	}
-	sort.Ints(sortedNum)
-	fmt.Println(sortedNum)
 	var ans int
-	var temp int
-	for _, num := range sortedNum {
-		if mark[num] == 0 { // 如果是区间start的话，代表有路由器接入
-			temp++
-		} else { // 如果是区间end点的话，代表有路由器断开连接
-			temp--
+	sort.Slice(nums, func(i, j int) bool {
+		a, b := nums[i], nums[j]
+		return a[0] < b[0]
+	})
+	fmt.Println(nums)
+
+	for i := 0; i < len(nums); i++ {
+		temp := 1 // 代表最少有一台会同时在线
+		end := nums[i][1]
+		for j := i + 1; j < len(nums); j++ {
+			if nums[j][0] < end {
+				temp++
+				end = min(nums[j][1], end)
+			} else {
+				break
+			}
 		}
-		if ans < temp { // 每次遍历完后，保存当前的最大结果值
-			ans = temp
-		}
+		ans = max(ans, temp)
 	}
 	return ans
+}
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}
+func max(x, y int) int {
+	if x < y {
+		return y
+	}
+	return x
 }
